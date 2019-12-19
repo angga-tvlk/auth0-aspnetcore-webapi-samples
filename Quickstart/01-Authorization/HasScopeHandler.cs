@@ -12,11 +12,11 @@ namespace WebAPIApplication
             if (!context.User.HasClaim(c => c.Type == "scope" && c.Issuer == requirement.Issuer))
                 return Task.CompletedTask;
 
-            // Split the scopes string into an array
-            var scopes = context.User.FindFirst(c => c.Type == "scope" && c.Issuer == requirement.Issuer).Value.Split(' ');
+            // Get the permissions from claims
+            var permissions = context.User.FindAll(c => c.Type == "permissions" && c.Issuer == requirement.Issuer).Select(x => x.Value);
 
             // Succeed if the scope array contains the required scope
-            if (scopes.Any(s => s == requirement.Scope))
+            if (permissions.Any(s => s == requirement.Scope))
                 context.Succeed(requirement);
 
             return Task.CompletedTask;
